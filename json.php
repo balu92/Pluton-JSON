@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8">
         <title>Pluton JSON stuff</title>
-        <link href="/css/form.css" type="text/css" rel="stylesheet" />
+        <link href="./css/form.css" type="text/css" rel="stylesheet" />
         <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
     </head>
     <body>

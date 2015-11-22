@@ -3,25 +3,25 @@
     <head>
         <meta charset="UTF-8">
         <title>Pluton JSON stuff</title>
-        <link href="/css/form.css" type="text/css" rel="stylesheet" />
+        <link href="./css/form.css" type="text/css" rel="stylesheet" />
         <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
         <script src="vars.js"></script>
     </head>
     <body>
-        <form id="form" action="json.php" method="post">
+        <form id='form' action='javascript:;'>
             <span class="title">TargetAssembly:
                 <input type="text" name="TargetAssembly" value="Assembly-CS.dll" /></span>
 
             <span class="indentx1">Type:
-                <input class="type" data-type="0" type="text" name="Types[Type0]" value="BasePlayer" /></span>
+                <input class="type" data-type="0" type="text" name="TargetType" value="BasePlayer" /></span>
 
             <span class="indentx2">Method:
-                <input type="text" data-type="0" name="Types[Type0][Methods][0][TargetMethod]" value="Die" /></span>
+                <input type="text" data-type="0" name="TargetMethod" value="Die" /></span>
 
             <span class="title indentx2">Instruction:</span>
 
             <span class="indentx3">InstructionType:
-                <select data-type="0" name="Types[Type0][Methods][0][Instructions][0][InstructionType]">
+                <select data-type="0" name="InstructionType">
                     <option selected="selected">Append</option>
                     <option>Clear</option>
                     <option>InsertAfter</option>
@@ -32,7 +32,7 @@
                 </select></span>
 
             <span class="indentx3">OperandType:
-                <select data-type="0" data-method="0" name="Types[Type0][Methods][0][Instructions][0][OperandType]">
+                <select data-type="0" data-method="0" name="OperandType">
                     <option>None</option>
                     <option>Instruction</option>
                     <option>Type</option>
@@ -50,7 +50,7 @@
                 </select></span>
 
             <span class="indentx3">OpCode:
-                <select data-type="0" name="Types[Type0][Methods][0][Instructions][0][OpCode]">
+                <select data-type="0" name="OpCode">
                     <option>Nop</option>
                     <option>Ldlen</option>
                     <option>Ldelema</option>
@@ -271,15 +271,39 @@
                     <option>Switch</option>
                     <option>Readonly</option>
                 </select></span>
-            <span class="indentx3"><a id="addInstr" data-type="0" data-instr="0" data-method="0" href="#">Add new instruction</a></span>
-            <span class="indentx2"><a id="addMethod" data-type="0" data-method="0" href="#">Add new method</a></span>
-            <span class="indentx1"><a id="addType" href="#">Add new type</a></span>
+            <span class="indentx3"><a id="addInstr" data-type="0" data-instr="0" data-method="0" href="javascript:;">Add new instruction</a></span>
+            <span class="indentx2"><a id="addMethod" data-type="0" data-method="0" href="javascript:;">Add new method</a></span>
+            <span class="indentx1"><a id="addType" href="javascript:;">Add new type</a></span>
 
             <br />
             <br />
             <span><input value="Generate JSON" type="submit" /></span>
         </form>
+		<br />
+		<br />
+		<br />
+		<br />
+		<br />
+		<br />
+		<br />
+		<br />
+		<br />
+		<br />
+		<br />
+		<br />
+		<br />
+		<br />
+		<br />
+		<br />
+		<br />
+		<br />
+		<pre>
+<jsonoutput>
+</jsonoutput>
+		</pre>
         <script>
+            
+            var Patchie = {};
             
             var next_type_num = 1;
             
@@ -287,31 +311,63 @@
                 return string.slice(0, prefix.length) == prefix;
             }
             
+            function SetTargetAssembly() {
+                Patchie["TargetAssembly"] = $('input[name^="TargetAssembly"]')[0].value;
+            }
+            
+            function AddType() {
+				SetTargetAssembly();
+                if (!Patchie["Types"]) {
+                    Patchie["Types"] = {};
+                }
+                if (!Patchie["Types"][$('input[name^="TargetType"]')[0].value]) {
+                    Patchie["Types"][$('input[name^="TargetType"]')[0].value] = {};
+                }
+                if (!Patchie["Types"][$('input[name^="TargetType"]')[0].value]["Methods"]) {
+                    Patchie["Types"][$('input[name^="TargetType"]')[0].value]["Methods"] = [];
+                }
+            }
+            
+            function AddMethod() {
+                AddType();
+                for (var i = 0; i < Patchie["Types"][$('input[name^="TargetType"]')[0].value]["Methods"].length; i++) {
+                    if (Patchie["Types"][$('input[name^="TargetType"]')[0].value]["Methods"][i]["TargetMethod"] == $('input[name^="TargetMethod"]')[0].value)
+                        return;
+                }
+                
+                Patchie["Types"][$('input[name^="TargetType"]')[0].value]["Methods"].push(
+                    {
+                        TargetMethod: $('input[name^="TargetMethod"]')[0].value,
+                        Instructions: []
+                    }
+                );
+            }
+            
+            function AddInstruction() {
+                AddMethod();
+                for (var i = 0; i < Patchie["Types"][$('input[name^="TargetType"]')[0].value]["Methods"].length; i++) {
+                    if (Patchie["Types"][$('input[name^="TargetType"]')[0].value]["Methods"][i]["TargetMethod"] == $('input[name^="TargetMethod"]')[0].value) {
+                        Patchie["Types"][$('input[name^="TargetType"]')[0].value]["Methods"][i]["Instructions"].push( {
+                                InstructionType: $('select[name^="InstructionType"]')[0].value,
+                                OperandType: $('select[name^="OperandType"]')[0].value,
+                                OpCode: $('select[name^="OpCode"]')[0].value
+                            }
+                        );
+                    }
+                }
+            }
+            
             $(function () {
                 $('#addType').click(function () {
-                    var new_html = type_html.replace(/_NUM_/g, next_type_num);
-                    $(this).parent().before(new_html);
-                    next_type_num++;
+                    AddType();
                 });
                 
                 $('#addMethod').click(function () {
-                    var curtype = $(this).attr('data-type');
-                    var next_method = +$(this).attr('data-method') + 1;
-                    var new_html = method_html.replace(/_NUM_/g, curtype);
-                    new_html = new_html.replace(/_MNUM_/g, next_method);
-                    $(this).parent().before(new_html);
-                    $(this).attr('data-method', parseInt($(this).attr('data-method')) + 1);
+                    AddMethod();
                 });
                 
                 $('#addInstr').click(function () {
-                    var curtype = $(this).attr('data-type');
-                    var cur_method = +$(this).attr('data-method') + 1;
-                    var next_instr = +$(this).attr('data-instr') + 1;
-                    var new_html = instr_html.replace(/_NUM_/g, curtype);
-                    new_html = new_html.replace(/_MNUM_/g, cur_method);
-                    new_html = new_html.replace(/_INUM_/g, next_instr);
-                    $(this).parent().before(new_html);
-                    $(this).attr('data-instr', parseInt($(this).attr('data-instr')) + 1);
+                    AddInstruction();
                 });
                 
                 $(document).on('change', 'select', function () {
@@ -320,8 +376,8 @@
                         var TypeNum = $(this).attr('data-type');
                         if (this.value == "Method") {
                             var cur_method = $(this).attr('data-method');
-                            var new_html = method_select.replace(/_NUM_/g, TypeNum);
-                            new_html = new_html.replace(/_MNUM_/g, cur_method);
+                            var new_html = method_select.replace(/_NUM_/g, TypeNum)
+                            new_html = new_html.replace(/_MNUM_/g, cur_method)
                             $(this).parent().after(new_html);
                         }
                         else {
@@ -337,22 +393,8 @@
                 });
                 
                 $('#form').on('submit', function (e) {
-                    $('input[class="type"]').each(function (index) {
-                        var elm = $(this);
-                        var Type = elm.val();
-                        $('input[name^="Types[Type' + index + ']"]').filter(':input').each(function () {
-                            var name = $(this).attr('name');
-                            var newname = name.replace("Type" + index, Type);
-                            $(this).attr('name', newname);
-                        });
-                        $('select[name^="Types[Type' + index + ']"]').filter(':input').each(function () {
-                            var name = $(this).attr('name');
-                            var newname = name.replace("Type" + index, Type);
-                            $(this).attr('name', newname);
-                        });
-                    });
-                    this.target = 'jsonresult';
-                    window.parent.resizeFrame('*,250');
+                    Patchie["TargetAssembly"] = $('input[name^="TargetAssembly"]')[0].value;
+					document.getElementsByTagName("jsonoutput")[0].innerHTML = JSON.stringify(Patchie, null, "    ");
                 });
             });
         </script>
