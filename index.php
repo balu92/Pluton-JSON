@@ -6,6 +6,11 @@
         <link href="./css/form.css" type="text/css" rel="stylesheet" />
         <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
         <script src="vars.js"></script>
+		<link href="https://cdn.rawgit.com/lmenezes/json-tree/master/dist/css/jsontree.css" rel="stylesheet">
+        <script src="https://cdn.rawgit.com/lmenezes/json-tree/master/dist/js/jsontree.min.js"></script>
+		<style>
+		.jstValue {font-size: 13px !important;}
+		</style>
     </head>
     <body>
         <form id='form' action='javascript:;'>
@@ -394,7 +399,7 @@
                 
                 $('#form').on('submit', function (e) {
                     Patchie["TargetAssembly"] = $('input[name^="TargetAssembly"]')[0].value;
-					document.getElementsByTagName("jsonoutput")[0].innerHTML = JSON.stringify(Patchie, null, "    ");
+					document.getElementsByTagName("jsonoutput")[0].innerHTML = JSONTree.create(Patchie);
                 });
             });
         </script>
