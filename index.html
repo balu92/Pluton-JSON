@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Pluton JSON Generator</title>
+        <script type='text/javascript'>
+            function resizeFrame(set) {
+                var loc = document.getElementById('frames');
+                loc.rows = set;
+            }
+        </script>
+    </head>
+    <frameset rows="*,0" id="frames">
+        <frame src="index.php" name="userinput" />
+        <frame src="json.php" name="jsonresult" />
+
+        <noframes>
+            <p>Frames support required.</p>
+        </noframes>
+
+    </frameset>
+</html>

@@ -1,0 +1,29 @@
+textarea {
+    width: 100%;
+}
+form span {
+    font-family: "Georgia";
+    display: block;
+    width: 150px;
+    float: left;
+    clear: both;
+}
+input {
+    float: left;
+}
+
+form span.title {
+    font-weight: bold;
+}
+
+form span.indentx1 {
+    margin-left: 40px;
+}
+
+form span.indentx2 {
+    margin-left: 80px;
+}
+
+form span.indentx3 {
+    margin-left: 120px;
+}
