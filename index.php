@@ -6,6 +6,7 @@
         <link href="./css/form.css" type="text/css" rel="stylesheet" />
         <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
         <script src="vars.js"></script>
+        <script src="download.js"></script>
 		<link href="https://cdn.rawgit.com/lmenezes/json-tree/master/dist/css/jsontree.css" rel="stylesheet">
         <script src="https://cdn.rawgit.com/lmenezes/json-tree/master/dist/js/jsontree.min.js"></script>
 		<style>
@@ -14,6 +15,9 @@
     </head>
     <body>
         <form id='form' action='javascript:;'>
+			<span class="title">
+				<button type="file" id="SaveJSON" onclick="download(JSON.stringify(Patchie, null, '    '), 'patch.json', 'text/plain');">Save configuration</button></span>
+				
             <span class="title">TargetAssembly:
                 <input type="text" name="TargetAssembly" value="Assembly-CS.dll" /></span>
 
