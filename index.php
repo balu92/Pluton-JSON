@@ -15,8 +15,10 @@
     </head>
     <body>
         <form id='form' action='javascript:;'>
+			<span class="title">Load config:
+				<input type="file" id="loadJSON" name="files[]" multiple /></span>
 			<span class="title">
-				<button type="file" id="SaveJSON" onclick="download(JSON.stringify(Patchie, null, '    '), 'patch.json', 'text/plain');">Save configuration</button></span>
+				<button id="SaveJSON" onclick="download(JSON.stringify(Patchie, null, '    '), 'patch.json', 'text/plain');">Save configuration</button></span>
 				
             <span class="title">TargetAssembly:
                 <input type="text" name="TargetAssembly" value="Assembly-CS.dll" /></span>
@@ -204,6 +206,15 @@
 			// the object we use as backend
             var Patchie = {};
             
+			function handleFileSelect(evt) {
+				var file = evt.target.files[0];
+				var reader = new FileReader();
+				reader.readAsText(file);
+				$(reader).on("load", function () {
+					Patchie = JSON.parse(reader.result);
+				});
+			}
+			
             function stringStartsWith(string, prefix) {
                 return string.slice(0, prefix.length) == prefix;
             }
@@ -307,6 +318,10 @@
                     AddInstruction();
                 });
                 
+				$(document).ready(function () {
+					document.getElementById("loadJSON").addEventListener('change', handleFileSelect, false);
+				});
+				
                 $(document).on('change', 'select', function () {
 					ValuesToSelection();
                     var selname = $(this).attr('name');
