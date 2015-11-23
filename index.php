@@ -97,8 +97,7 @@
 		</pre>
         <script>
 		
-            // optional input fields
-			
+            // html for the optional input fields
 			var OptionalFields = {
 				Operand: '<span class="indentx3">Operand: <input data-type="0" name="Operand" type="text" /></span>',
 				OperandType: '<span class="indentx3">OperandType: <select data-type="0" data-method="0" name="OperandType"><option>None</option> <option>Instruction</option> <option>Type</option> <option>Method</option> <option>Field</option> <option>Parameter</option> <option>Variable</option> <option>SByte</option> <option>Byte</option> <option>Int</option> <option>Float</option> <option>Long</option> <option>Double</option> <option>String</option></select></span>',
@@ -112,6 +111,8 @@
 				TargetMethod: '<span class="indentx3">TargetMethod: <input data-type="0" name="OperandType-TargetMethod" type="text" /></span>',
 				TargetMethodSigniture: '<span class="indentx3">TargetMethodSigniture: <input data-type="0" name="OperandType-TargetMethodSigniture" type="text" /></span>',
 			};
+			
+			// TODO: can't we hide them via css?
 			
 			/* since I add the optional fields in such a hacky way,
 			it would reset them to their default values,
@@ -133,6 +134,7 @@
 				TargetMethodSigniture: null
 			};
 			
+			// dirty save
 			var ValuesToSelection = function() {
 				if ($('input[name="Operand"]')[0] && $('input[name="Operand"]')[0].value != "")
 					Selection.Operand = $('input[name="Operand"]')[0].value;
@@ -168,6 +170,7 @@
 					Selection.TargetMethodSigniture = $('input[name="OperandType-TargetMethodSigniture"]')[0].value;
 			}
 			
+			// dirty restore
 			var SelectionToValues = function() {
 				if ($('input[name="Operand"]')[0] && Selection.Operand != "")
 					$('input[name="Operand"]')[0].value = Selection.Operand;
@@ -206,43 +209,57 @@
 			// the object we use as backend
             var Patchie = {};
             
+			// load the selected file
 			function handleFileSelect(evt) {
+				
+				// evt.target.files is an array of files, but we load only one, for the time being
+				// probably more later? why not?
 				var file = evt.target.files[0];
 				var reader = new FileReader();
 				reader.readAsText(file);
+				
+				// wait for the file to be loaded
 				$(reader).on("load", function () {
 					Patchie = JSON.parse(reader.result);
 				});
 			}
-			
-            function stringStartsWith(string, prefix) {
-                return string.slice(0, prefix.length) == prefix;
-            }
             
             function SetTargetAssembly() {
                 Patchie["TargetAssembly"] = $('input[name="TargetAssembly"]')[0].value;
             }
             
             function AddType() {
+				
+				// ensure TargetAssembly is set
 				SetTargetAssembly();
+				
+				// create the Types object if it's not already there
                 if (!Patchie["Types"]) {
                     Patchie["Types"] = {};
                 }
                 if (!Patchie["Types"][$('input[name="TargetType"]')[0]]) {
                     Patchie["Types"][$('input[name="TargetType"]')[0].value] = {};
                 }
+				// TODO: we don't need methods for every type, for example if we just make a few field public
+				// so move this to AddMethod() properly
                 if (!Patchie["Types"][$('input[name="TargetType"]')[0].value]["Methods"]) {
                     Patchie["Types"][$('input[name="TargetType"]')[0].value]["Methods"] = [];
                 }
             }
             
+			// TODO: AddField()
+			
             function AddMethod() {
+				// ensure that the type is added
                 AddType();
                 for (var i = 0; i < Patchie["Types"][$('input[name="TargetType"]')[0].value]["Methods"].length; i++) {
+					// TODO: check for method signiture
                     if (Patchie["Types"][$('input[name="TargetType"]')[0].value]["Methods"][i]["TargetMethod"] == $('input[name="TargetMethod"]')[0].value)
                         return;
                 }
                 
+				// TODO: if ($('input[name="TargetMethod"]')[0].value != '')
+				
                 Patchie["Types"][$('input[name="TargetType"]')[0].value]["Methods"].push(
                     {
                         TargetMethod: $('input[name="TargetMethod"]')[0].value,
@@ -252,6 +269,7 @@
             }
             
             function AddInstruction() {
+				// ensure that the method is added
                 AddMethod();
                 for (var i = 0; i < Patchie["Types"][$('input[name="TargetType"]')[0].value]["Methods"].length; i++) {
                     if (Patchie["Types"][$('input[name="TargetType"]')[0].value]["Methods"][i]["TargetMethod"] == $('input[name="TargetMethod"]')[0].value) {
@@ -383,7 +401,7 @@
                 });
                 
                 $('#form').on('submit', function (e) {
-                    Patchie["TargetAssembly"] = $('input[name="TargetAssembly"]')[0].value;
+					// generate the treeview
 					document.getElementsByTagName("jsonoutput")[0].innerHTML = JSONTree.create(Patchie);
                 });
             });
